@@ -1,0 +1,10 @@
+{
+    "configurations": [
+    {
+        "name": "C#: WinFormsDesigners Debug",
+        "type": "dotnet",
+        "request": "launch",
+        "projectPath": "${workspaceFolder}/SWD4CS.csproj"
+    }
+    ]
+}
