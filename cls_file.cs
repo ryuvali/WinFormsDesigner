@@ -41,7 +41,21 @@
             FILE_INFO fileInfo = new();
             fileInfo.source_FileName = filePath;
             string designCode = System.IO.File.ReadAllText(filePath);
-            string[] line_code = designCode.Split(Environment.NewLine);
+            string[] line_code = GetLines(designCode);
+
+            static string[] GetLines(string text)
+            {
+                var lines = new List<string>();
+                using (var reader = new StringReader(text))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        lines.Add(line);
+                    }
+                }
+                return lines.ToArray();
+            }
             int mode = 0;
 
             for (int i = 0; i < line_code.Length; i++)
@@ -73,7 +87,7 @@
                 if (mode == 3)
                 {
                     Read_Ctrl(line_code[i], fileInfo);
-                    if (line_code[i + 1].Contains("this.ResumeLayout(false)")) { mode = 4; }
+                    if (i + 1 < line_code.Length && line_code[i + 1].Contains("this.ResumeLayout(false)")) { mode = 4; }
                 }
             }
             return fileInfo;
@@ -309,32 +323,33 @@
         {
             File.WriteAllText(FileName, SourceCode);
         }
-
+        private static string lastPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         internal static void Save(string SourceCode)
         {
             SaveFileDialog dlg = new()
             {
                 FileName = "Form1.Designer.cs",
-                InitialDirectory = @"C:\",
-                Filter = "Designer.csファイル(*.Designer.cs;*.Designer.cs)|*.Designer.cs;*.Designer.cs",
+                InitialDirectory = lastPath,
+                Filter = "Designer.csfile(*.Designer.cs;*.Designer.cs)|*.Designer.cs;*.Designer.cs",
                 FilterIndex = 1,
-                Title = "保存先のファイルを選択してください",
+                Title = "Select the destination file",
                 RestoreDirectory = true
             };
-            if (dlg.ShowDialog() == DialogResult.OK) { File.WriteAllText(dlg.FileName, SourceCode); }
+            if (dlg.ShowDialog() == DialogResult.OK) { File.WriteAllText(dlg.FileName, SourceCode); lastPath = Path.GetDirectoryName(dlg.FileName!); }
         }
 
         internal static FILE_INFO OpenFile()
         {
             OpenFileDialog dlg = new()
             {
-                InitialDirectory = @"C:\",
-                Filter = "Designer.csファイル(*.Designer.cs;*.Designer.cs)|*.Designer.cs;*.Designer.cs",
+                InitialDirectory = lastPath,
+                Filter = "Designer.csfile(*.Designer.cs;*.Designer.cs)|*.Designer.cs;*.Designer.cs",
                 FilterIndex = 1,
-                Title = "開くファイルを選択してください",
+                Title = "Please select a file to open",
                 RestoreDirectory = true
             };
             if (dlg.ShowDialog() != DialogResult.OK) { return new FILE_INFO(); }
+            lastPath = Path.GetDirectoryName(dlg.FileName!);
             return ReadCode(dlg.FileName);
         }
     }

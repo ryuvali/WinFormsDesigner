@@ -511,31 +511,35 @@ namespace SWD4CS
             {
                 string[] split = propertyValue.Split(',');
                 string strName = split[0].Replace("new System.Drawing.Font(", "").Trim();
-                string strSize = split[1].Replace("F", "").Trim();
+                string strSize = split[1].Replace("F", "").Replace(")", "").Trim();
                 float fSize = float.Parse(strSize, CultureInfo.InvariantCulture.NumberFormat);
-                string strStyle = split[2].Replace("System.Drawing.FontStyle", "").Replace("(", "").Replace(")", "").Replace(".", "").Replace(" ", "");
-                split = strStyle.Split("|");
                 int iStyle = 0;
-
-                foreach (string style in split)
+                if (split.Length > 2)
                 {
-                    switch (style)
+                    string strStyle = split[2].Replace("System.Drawing.FontStyle", "").Replace("(", "").Replace(")", "").Replace(".", "").Replace(" ", "");
+                    split = strStyle.Split("|");
+
+
+                    foreach (string style in split)
                     {
-                        case "Bold":
-                            iStyle += (int)FontStyle.Bold;
-                            break;
-                        case "Italic":
-                            iStyle += (int)FontStyle.Italic;
-                            break;
-                        case "Regular":
-                            iStyle += (int)FontStyle.Regular;
-                            break;
-                        case "Strikeout":
-                            iStyle += (int)FontStyle.Strikeout;
-                            break;
-                        case "Underline":
-                            iStyle += (int)FontStyle.Underline;
-                            break;
+                        switch (style)
+                        {
+                            case "Bold":
+                                iStyle += (int)FontStyle.Bold;
+                                break;
+                            case "Italic":
+                                iStyle += (int)FontStyle.Italic;
+                                break;
+                            case "Regular":
+                                iStyle += (int)FontStyle.Regular;
+                                break;
+                            case "Strikeout":
+                                iStyle += (int)FontStyle.Strikeout;
+                                break;
+                            case "Underline":
+                                iStyle += (int)FontStyle.Underline;
+                                break;
+                        }
                     }
                 }
                 font = new System.Drawing.Font(strName, fSize, (FontStyle)iStyle, System.Drawing.GraphicsUnit.Point);
